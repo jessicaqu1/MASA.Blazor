@@ -39,17 +39,17 @@ namespace MASA.Blazor
                     cssBuilder.Add("m-toolbar__content");
                 }, styleBuilder =>
                 {
-                   styleBuilder
-                      .AddFirstIf(
-                         ("height: 96px", () => Dense && Prominent),
-                         ("height: 128px", () => Prominent),
-                         ("height: 48px", () => Dense),
-                         ("height: 64px", () => true)
-                         )
-                       .AddMinWidth(MinWidth)
-                       .AddMaxWidth(MaxWidth)
-                       .AddMinHeight(MinHeight)
-                       .AddMaxHeight(MaxHeight);
+                    styleBuilder
+                       .AddFirstIf(
+                          ("height: 96px", () => Dense && Prominent),
+                          ("height: 128px", () => Prominent),
+                          ("height: 48px", () => Dense),
+                          ("height: 64px", () => true)
+                          )
+                        .AddMinWidth(MinWidth)
+                        .AddMaxWidth(MaxWidth)
+                        .AddMinHeight(MinHeight)
+                        .AddMaxHeight(MaxHeight);
                 });
         }
     }
