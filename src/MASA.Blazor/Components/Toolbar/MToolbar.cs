@@ -38,7 +38,7 @@ namespace MASA.Blazor
                 {
                     cssBuilder.Add("m-toolbar__content");
                 }, styleBuilder =>
-               {
+                {
                    styleBuilder
                       .AddFirstIf(
                          ("height: 96px", () => Dense && Prominent),
@@ -50,8 +50,7 @@ namespace MASA.Blazor
                        .AddMaxWidth(MaxWidth)
                        .AddMinHeight(MinHeight)
                        .AddMaxHeight(MaxHeight);
-               });
-
+                });
         }
     }
 }
