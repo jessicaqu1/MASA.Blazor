@@ -919,27 +919,16 @@ namespace MASA.Blazor
             return timestamp;
         }
 
-        public string GenIntervalLabel(CalendarTimestamp interval)
-        { 
-            var @short = ShortIntervals;
-            var show = ShowIntervalLabel(interval) || ShowIntervalLabelDefault(interval);
-            var label = show ? 
-        }
+        
 
-        protected bool ShowIntervalLabelDefault(CalendarTimestamp interval)
-        {
-            var first = _intervals[0][0];
-            var isFirst = first.Hour == interval.Hour && first.Minute == interval.Minute;
+        
 
-            return !isFirst;
-        }
+        //protected Func<CalendarTimestamp, bool, string> IntervalFormatter()
+        //{
+        //    if (IntervalFormat != null)
+        //        return IntervalFormat;
 
-        protected Func<CalendarTimestamp, bool, string> IntervalFormatter()
-        {
-            if (IntervalFormat != null)
-                return IntervalFormat;
-
-            var longOptions = new CalendarFormatterOptions { TimeZone = "UTC", Hour = "2-digit", Minute = "2-digit" };
-        }
+        //    var longOptions = new CalendarFormatterOptions { TimeZone = "UTC", Hour = "2-digit", Minute = "2-digit" };
+        //}
     }
 }
