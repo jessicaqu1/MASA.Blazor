@@ -86,6 +86,9 @@ namespace MASA.Blazor
         [Parameter]
         public bool Light { get; set; }
 
+        [Parameter]
+        public int Elevation { get; set; }
+
         [CascadingParameter]
         public IThemeable Themeable { get; set; }
 

@@ -10,16 +10,29 @@
       "Description": "从骨架中移除加载动画"
     },
     {
-      "Name": "Class",
-      "Type": "String",
-      "Default": "null",
-      "Description": "应用到组件最外层元素的class"
+      "Name": "Dark",
+      "Type": "Boolean",
+      "Default": "false",
+      "Description": "将暗色主题变量应用到组件。"
     },
+    {
+      "Name": "Elevation",
+      "Type": "StringNumber",
+      "Default": "null",
+      "Description": "组件的海拔可接受 0 到 24 之间的值。"
+    },
+
     {
       "Name": "Height",
       "Type": "StringNumber",
       "Default": "",
       "Description": "设定组件的高度。"
+    },
+    {
+      "Name": "Light",
+      "Type": "Boolean",
+      "Default": "false",
+      "Description": "为组件设置浅色主题。"
     },
     {
       "Name": "Loading",
@@ -52,12 +65,6 @@
       "Description": "设定组件的最小宽度。"
     },
     {
-      "Name": "Style",
-      "Type": "String",
-      "Default": "null",
-      "Description": "应用到组件最外层元素的style"
-    },
-    {
       "Name": "Tile",
       "Type": "Boolean",
       "Default": "false",
@@ -86,6 +93,18 @@
       "Type": "StringNumber",
       "Default": "",
       "Description": "设定组件的宽度。"
+    },
+    {
+      "Name": "Class",
+      "Type": "String",
+      "Default": "null",
+      "Description": "应用到组件最外层元素的class"
+    },
+    {
+      "Name": "Style",
+      "Type": "String",
+      "Default": "null",
+      "Description": "应用到组件最外层元素的style"
     }
   ],
   "Contents": [
