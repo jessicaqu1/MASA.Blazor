@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MASA.Blazor
 {
@@ -44,7 +41,7 @@ namespace MASA.Blazor
                 })
                 .Apply("headDay", cssBuilder =>
                 {
-                    var timestamp = _days?[cssBuilder.Index];
+                    var timestamp = cssBuilder.Context.Data as CalendarTimestamp;
                     var outside = IsOutside(timestamp);
                     cssBuilder
                         .Add("m-calendar-weekly__head-weekday")
@@ -54,8 +51,9 @@ namespace MASA.Blazor
                         .AddIf("m-outside", () => outside);
                 }, styleBuilder =>
                 {
+                    var timestamp = styleBuilder.Context.Data as CalendarTimestamp;
                     styleBuilder
-                        .AddTextColor((_days?[styleBuilder.Index]?.Present ?? false) ? Color : string.Empty);
+                        .AddTextColor((timestamp?.Present ?? false) ? Color : string.Empty);
                 })
                 .Apply("week", cssBuilder =>
                 {
@@ -69,7 +67,7 @@ namespace MASA.Blazor
                 })
                 .Apply("day", cssBuilder =>
                 {
-                    var timestamp = _days?[cssBuilder.Index];
+                    var timestamp = cssBuilder.Context.Data as CalendarTimestamp;
                     var outside = IsOutside(timestamp);
                     cssBuilder
                         .Add("m-calendar-weekly__day")
@@ -90,7 +88,7 @@ namespace MASA.Blazor
                 {
                     props.TryGetValue("ItemIndex", out var itemIndexStr);
                     var itemIndex = Convert.ToInt32(itemIndexStr);
-                    var day = _days?[itemIndex];
+                    var day = Days()?[itemIndex];
 
                     props[nameof(MButton.Color)] = (day?.Present ?? false) ? Color : "transparent";
                     props[nameof(MButton.Fab)] = true;
@@ -106,20 +104,20 @@ namespace MASA.Blazor
             var start = GetStartOfWeek(Today);
             var end = GetEndOfWeek(Today);
 
-            return Timestamp.CreateDayList(start, end, today,
+            return CalendarTimestampUtils.CreateDayList(start, end, today,
                 WeekdaySkips(), ParsedWeekdays().Count, ParsedWeekdays().Count);
         }
 
         public bool IsOutside(CalendarTimestamp day)
         {
-            var dayIdentifier = Timestamp.GetDayIdentifier(day);
+            var dayIdentifier = CalendarTimestampUtils.GetDayIdentifier(day);
 
-            return dayIdentifier < Timestamp.GetDayIdentifier(ParsedStart()) ||
-                dayIdentifier > Timestamp.GetDayIdentifier(ParsedEnd());
+            return dayIdentifier < CalendarTimestampUtils.GetDayIdentifier(ParsedStart()) ||
+                dayIdentifier > CalendarTimestampUtils.GetDayIdentifier(ParsedEnd());
         }
 
         public int GetWeekNumber(CalendarTimestamp determineDay) =>
-            DateTimeUtils.WeekNumber(determineDay.Year, determineDay.Month - 1,
+            CalendarDateTimeUtils.WeekNumber(determineDay.Year, determineDay.Month - 1,
                 determineDay.Day, ParsedWeekdays()[0], LocaleFirstDayOfYear.ToInt32());
 
         public List<CalendarTimestamp> Day => Days();
@@ -134,7 +132,7 @@ namespace MASA.Blazor
             var longOptions = new CalendarFormatterOptions { TimeZone = "UTC", Day = "long" };
             var shortOptions = new CalendarFormatterOptions { TimeZone = "UTC", Day = "short" };
 
-            return Timestamp.CreateNativeLocaleFormatter(_currentLocale, 
+            return CalendarTimestampUtils.CreateNativeLocaleFormatter(_currentLocale, 
                 (_tms, @short) => @short ? shortOptions : longOptions);
         }
     }

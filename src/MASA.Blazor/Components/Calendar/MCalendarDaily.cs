@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Element = BlazorComponent.Web.Element;
 
 namespace MASA.Blazor
 {
@@ -25,6 +25,10 @@ namespace MASA.Blazor
 
         protected double _scrollPush = 0;
 
+        public ElementReference ScrollAreaRef { get; set; }
+
+        public ElementReference PaneRef { get; set; }
+
         protected override void SetComponentClass()
         {
             CssProvider
@@ -41,7 +45,7 @@ namespace MASA.Blazor
                 }, styleBuilder =>
                 {
                     styleBuilder
-                        .Add($"marginRight:{_scrollPush}px");
+                        .Add($"margin-right:{_scrollPush}px");
                 })
                 .Apply("intervals", cssBuilder =>
                 {
@@ -54,7 +58,7 @@ namespace MASA.Blazor
                 })
                 .Apply("headDay", cssBuilder =>
                 {
-                    var timestamp = _days?[cssBuilder.Index];
+                    var timestamp = cssBuilder.Context.Data as CalendarTimestamp;
                     cssBuilder
                         .Add("m-calendar-daily_head-day")
                         .AddIf("m-present", () => timestamp?.Present ?? false)
@@ -67,8 +71,9 @@ namespace MASA.Blazor
                         .Add("m-calendar-daily_head-weekday");
                 }, styleBuilder =>
                 {
+                    var timestamp = styleBuilder.Context.Data as CalendarTimestamp;
                     styleBuilder
-                        .AddTextColor((_days?[styleBuilder.Index]?.Present ?? false) ? Color : string.Empty);
+                        .AddTextColor((timestamp?.Present ?? false) ? Color : string.Empty);
                 })
                 .Apply("headDayLabel", cssBuilder =>
                 {
@@ -124,7 +129,7 @@ namespace MASA.Blazor
                 })
                 .Apply("day", cssBuilder =>
                 {
-                    var timestamp = _days?[cssBuilder.Index];
+                    var timestamp = cssBuilder.Context.Data as CalendarTimestamp;
                     cssBuilder
                         .Add("m-calendar-daily__day")
                         .AddIf("m-present", () => timestamp?.Present ?? false)
@@ -137,8 +142,8 @@ namespace MASA.Blazor
                         .Add("m-calendar-daily__day-interval");
                 }, styleBuilder =>
                 {
-                    var timestamp = _days?[styleBuilder.Index];
-                    var styler = IntervalStyle(timestamp);
+                    var timestamp = styleBuilder.Context.Data as CalendarTimestamp;
+                    //var styler = IntervalStyle(timestamp);
                     //TODO ...styler(interval),
                     styleBuilder
                         .AddHeight(IntervalHeight);
@@ -150,7 +155,7 @@ namespace MASA.Blazor
                 {
                     props.TryGetValue("ItemIndex", out var itemIndexStr);
                     var itemIndex = Convert.ToInt32(itemIndexStr);
-                    var day = _days?[itemIndex];
+                    var day = Days()?[itemIndex];
 
                     props[nameof(MButton.Color)] = (day?.Present ?? false) ? Color : "transparent";
                     props[nameof(MButton.Fab)] = true;
@@ -159,12 +164,22 @@ namespace MASA.Blazor
                 });
         }
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                var area = await JsInvokeAsync<Element>(JsInteropConstants.GetDomInfo, ScrollAreaRef);
+                var pane = await JsInvokeAsync<Element>(JsInteropConstants.GetDomInfo, PaneRef);
 
+                _scrollPush = area != null && pane != null ? (area.OffsetWidth - pane.OffsetWidth) : 0;
+            }
+        }
 
         public string GenIntervalLabel(CalendarTimestamp interval)
         {
             var @short = ShortIntervals;
-            var show = ShowIntervalLabel(interval) || ShowIntervalLabelDefault(interval);
+            var shower = ShowIntervalLabel ?? ShowIntervalLabelDefault;
+            var show = shower(interval);
             var label = show ? IntervalFormatter(interval, @short) : null;
 
             return label;
@@ -172,9 +187,9 @@ namespace MASA.Blazor
 
         public List<CalendarTimestamp> GenDayIntervals(int index)
         {
-            _intervals ??= Intervals();
+            var intervals = Intervals();
 
-            return _intervals.Count() > index ? _intervals[index] : null;
+            return intervals.Count > index ? intervals[index] : null;
         }
     }
 }
