@@ -166,5 +166,70 @@ namespace BlazorComponent
 
             return cssBuilder;
         }
+
+        public static CssBuilder AddRoutable(this CssBuilder cssBuilder, IMRoutable routable)
+        {
+            return cssBuilder.AddIf(routable.ActiveClass, () => routable.To is not null && routable.ActiveClass is not null);
+        }
+
+        public static CssBuilder AddTheme(this CssBuilder cssBuilder, IMThemeable themeable, bool isCommonDark,Func<bool> ifTrue=null)
+        {
+            if (ifTrue is null) ifTrue = () => true;
+
+            return cssBuilder.AddIf(() => 
+            {
+                if (themeable.Dark || isCommonDark) return "theme--dark";
+                else return "theme--light";
+            }, ifTrue);
+        }
+
+        public static CssBuilder AddElevatable(this CssBuilder cssBuilder, IMElevatable elevatable,Func<bool> ifTrue = null)
+        {
+            if (ifTrue is null) ifTrue = () => true;
+
+            return cssBuilder.AddIf(ElevationClasses, ifTrue);
+
+            string ElevationClasses()
+            {
+                if (elevatable.Elevation is null) return "";
+                if (int.TryParse(elevatable.Elevation.ToString(), out var number))
+                {
+                    return $"elevation-{number}";
+                }
+                else return "";
+            }
+        }
+
+        public static CssBuilder AddRoundable(this CssBuilder cssBuilder, IMRoundable roundable, Func<bool> ifTrue = null)
+        {
+            if (ifTrue is null) ifTrue = () => true;
+
+            return cssBuilder.AddIf(RoundedClasses, ifTrue);
+
+            string RoundedClasses()
+            {
+                var composite = new List<string>();
+                if (roundable.Tile is true)
+                {
+                    composite.Add("rounded-0");
+                }
+                else if (roundable.Rounded == true)
+                {
+                    composite.Add("rounded");
+                }
+                else if (roundable.Rounded == false)
+                {
+                }
+                else if (roundable.Rounded is not null)
+                {
+                    var values = roundable.Rounded.ToString().Split(" ");
+                    foreach (var value in values)
+                    {
+                        composite.Add($"rounded-{value}");
+                    }
+                }
+                return String.Join(" ", composite);
+            }
+        }
     }
 }
