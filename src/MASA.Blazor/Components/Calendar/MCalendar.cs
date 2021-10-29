@@ -87,7 +87,31 @@ namespace MASA.Blazor
                 })
                 .Apply("daybody", cssBuilder =>
                 {
-                    cssBuilder.Add("m-event-timed-container");
+                    cssBuilder
+                        .Add("m-event-timed-container");
+                })
+                .Apply("placeholder", styleAction: styleBuilder =>
+                {
+                    styleBuilder
+                        .AddHeight(EventHeight + EventMarginBottom);
+                })
+                .Apply("timedContainer", cssBuilder =>
+                {
+                    cssBuilder
+                        .Add("m-event-timed-container");
+                })
+                .Apply("more", cssBuilder =>
+                {
+                    var day = cssBuilder.Context.Data as CalendarDaySlotScope;
+                    cssBuilder
+                        .Add("m-event-more pl-1")
+                        .AddIf("m-outside", () => day.Outside);
+                }, styleBuilder =>
+                {
+                    styleBuilder
+                        .AddHeight(EventHeight)
+                        .Add("display:none")
+                        .Add($"margin-bottom:{EventMarginBottom}px");
                 });
 
             Action<Dictionary<string, object>> propsAction = props => {
@@ -103,34 +127,40 @@ namespace MASA.Blazor
                 props["Categories"] = RenderProps.Categories;
             };
             AbstractProvider
+                .ApplyCalendarWithEventsDefault()
                 .Apply(typeof(ICalendarMonthly), typeof(MCalendarMonthly), propsAction)
                 .Apply(typeof(ICalendarCategory), typeof(MCalendarCategory), propsAction)
                 .Apply<BCalendarDaily, MCalendarDaily>(propsAction)
                 .Apply<BCalendarWeekly, MCalendarWeekly>(propsAction);
         }
 
-        public CalendarTimestamp ParsedValue => Value != null ? 
-            CalendarTimestampUtils.ParseTimestamp(Value) : 
-            (ParsedStart() ?? Today);
+        public CalendarTimestamp ParsedValue => Value != null ?
+            ParseTimestamp(Value) : (ParsedStart() ?? Today);
 
-        public int ParsedCategoryDays => 
+        public CalendarTimestamp ParseTimestamp(StringNumberDate input, bool required = false) =>
+            CalendarTimestampUtils.ParseTimestamp(input, required, TimesNow);
+
+        public int ParsedCategoryDays =>
             CategoryDays.ToInt32() > 0 ? CategoryDays.ToInt32() : 1;
 
         public override List<int> EventWeekdays => RenderProps.WeekDays;
 
         public override bool CategoryMode => Type.Equals("category");
 
-        public string Title()
+        public string Title
         {
-            var start = RenderProps.Start;
-            var end = RenderProps.End;
-            var spanYears = start.Year != end.Year;
-            var spanMonths = spanYears || start.Month != end.Month;
+            get
+            {
+                var start = RenderProps.Start;
+                var end = RenderProps.End;
+                var spanYears = start.Year != end.Year;
+                var spanMonths = spanYears || start.Month != end.Month;
 
-            return spanYears ?
-                $"{MonthShortFormatter(start, true)} {start.Year} - {MonthShortFormatter(end, true)} {end.Year}" :
-                (spanMonths ? $"{MonthShortFormatter(start, true)} - {MonthShortFormatter(end, true)} {end.Year}" :
-                $"{MonthLongFormatter(start, false)} {start.Year}");
+                return spanYears ?
+                    $"{MonthShortFormatter(start, true)} {start.Year} - {MonthShortFormatter(end, true)} {end.Year}" :
+                    (spanMonths ? $"{MonthShortFormatter(start, true)} - {MonthShortFormatter(end, true)} {end.Year}" :
+                    $"{MonthLongFormatter(start, false)} {start.Year}");
+            }
         }
 
         public Func<CalendarTimestamp, bool, string> MonthLongFormatter =>
@@ -150,9 +180,6 @@ namespace MASA.Blazor
                 Type component;
                 var maxDays = MaxDays;
                 var weekdays = ParsedWeekdays();
-                Categories = Categories.IsT0 && string.IsNullOrWhiteSpace(Categories.AsT0) ||
-                    Categories.IsT1 && Categories.AsT1 == null || !Categories.AsT1.Any() ?
-                    GetCategories() : Categories;
                 var categories = ParsedCategories;
                 var start = around;
                 var end = around;
@@ -176,7 +203,7 @@ namespace MASA.Blazor
                         break;
                     case "4day":
                         component = typeof(BCalendarDaily);
-                        end = CalendarTimestampUtils.RelativeDays(CalendarTimestampUtils.DeepCopy(around), 3);
+                        end = CalendarTimestampUtils.RelativeDays(CalendarTimestampUtils.DeepCopy(around), null, 3);
                         CalendarTimestampUtils.UpdateFormatted(end);
                         maxDays = 4;
                         weekdays = new List<int>
@@ -201,7 +228,7 @@ namespace MASA.Blazor
                         var days = ParsedCategoryDays;
 
                         component = typeof(ICalendarCategory);
-                        end = CalendarTimestampUtils.RelativeDays(CalendarTimestampUtils.DeepCopy(around), days);
+                        end = CalendarTimestampUtils.RelativeDays(CalendarTimestampUtils.DeepCopy(around), null, days);
                         CalendarTimestampUtils.UpdateFormatted(end);
                         maxDays = days;
                         weekdays = new List<int>();
@@ -249,7 +276,7 @@ namespace MASA.Blazor
                 { 
                     var categoryLength = categories.Count;
 
-                    ParsedEvents.ForEach(ev =>
+                    ParsedEvents().ForEach(ev =>
                     {
                         var category = ev.Category.IsT1 ? CategoryForInvalid : ev.Category.AsT0;
 
@@ -306,12 +333,57 @@ namespace MASA.Blazor
             return categoryMap;
         }
 
-        private OneOf<string, List<OneOf<string, Dictionary<string, object>>>> GetCategories()
-        {
-            var res = new List<OneOf<string, Dictionary<string, object>>>();
-            Events?.ForEach(x => { res.Add(x); });
+        public void Prev(int amount = 1) => Move(-amount);
 
-            return res;
+        public void Next(int amount = 1) => Move(amount);
+
+        public async Task Move(int amount = 1)
+        { 
+            var moved = CalendarTimestampUtils.DeepCopy(ParsedValue);
+            var forward = amount > 0;
+            var mover = forward ? CalendarTimestampUtils.NextDay : CalendarTimestampUtils.PrevDay;
+            var limit = forward ? CalendarTimestampUtils.DaysInMonthMax : CalendarTimestampUtils.DayMin;
+            var times = forward ? amount : -amount;
+
+            while (--times >= 0)
+            {
+                switch (Type)
+                {
+                    case "month":
+                        moved.Day = limit;
+                        mover(moved);
+                        break;
+                    case "week":
+                        CalendarTimestampUtils.RelativeDays(moved, mover, CalendarTimestampUtils.DaysInWeek);
+                        break;
+                    case "day":
+                        CalendarTimestampUtils.RelativeDays(moved, mover, 1);
+                        break;
+                    case "4day":
+                        CalendarTimestampUtils.RelativeDays(moved, mover, 4);
+                        break;
+                    case "category":
+                        CalendarTimestampUtils.RelativeDays(moved, mover, ParsedCategoryDays);
+                        break;
+                }
+            }
+
+            CalendarTimestampUtils.UpdateWeekday(moved);
+            CalendarTimestampUtils.UpdateFormatted(moved);
+            CalendarTimestampUtils.UpdateRelative(moved, TimesNow);
+
+            var newDate = CalendarTimestampUtils.TimestampToDate(moved);
+            if (Value.IsT2)
+                Value = newDate;
+            else if (Value.IsT1)
+                Value = CalendarTimestampUtils.GetTimestampIdentifier(moved);
+            else
+                Value = newDate.ToString("yyyy-MM-dd HH:mm");
+
+            await ValueChanged.InvokeAsync(Value);
+
+            Now = Value;
+            await NowChanged.InvokeAsync(Now);
         }
     }
 }
