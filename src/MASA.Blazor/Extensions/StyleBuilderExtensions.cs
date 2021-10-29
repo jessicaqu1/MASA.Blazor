@@ -126,5 +126,26 @@ namespace BlazorComponent
             return styleBuilder
                         .AddSize("max-height", maxHeight);
         }
+
+        public static StyleBuilder AddMeasurable(this StyleBuilder styleBuilder, IMMeasurable measurable, Func<bool> ifTrue=null)
+        {
+            if (ifTrue is null) ifTrue = () => true;
+
+            return styleBuilder.AddIf(MeasurabletStyles, ifTrue);
+
+            string MeasurabletStyles()
+            {
+                var styles = "";
+                if (measurable.Height is not null) styles += $"height: { measurable.Height.ToUnit()};";
+                if (measurable.MinHeight is not null) styles += $"min-height:{ measurable.MinHeight.ToUnit()};";
+                if (measurable.MinWidth is not null) styles += $"min-width:{ measurable.MinWidth.ToUnit()};";
+                if (measurable.MaxHeight is not null) styles += $"max-height:{measurable.MaxHeight.ToUnit()};";
+                if (measurable.MaxWidth is not null) styles += $"max-width:{measurable.MaxWidth.ToUnit()};";
+                if (measurable.Width is not null) styles += $"width:{measurable.Width.ToUnit()};";
+
+                return styles;
+            }
+        }
+
     }
 }
