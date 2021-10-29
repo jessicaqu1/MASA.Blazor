@@ -34,7 +34,7 @@ namespace MASA.Blazor
 
         int _last = 0;
 
-        decimal _scrollTop = 0;
+        int _scrollTop = 0;
 
         int ItemHeightNumber
         {
@@ -60,7 +60,7 @@ namespace MASA.Blazor
 
         int GetFirst()
         {
-            return (int)Math.Floor(_scrollTop / ItemHeightNumber);
+            return (int)Math.Floor(_scrollTop * 1.0f / ItemHeightNumber);
         }
 
         int GetLast(int first)
@@ -69,12 +69,11 @@ namespace MASA.Blazor
             return first + (int)(Math.Ceiling(height / ItemHeightNumber));
         }
 
-        void onScroll()
+        protected override void OnScroll(int scroolTop)
         {
-            _scrollTop = 100;
+            _scrollTop = scroolTop;
             _first = GetFirst();
             _last = GetLast(_first);
-            this.StateHasChanged();
         }
 
         protected override void SetComponentClass()
