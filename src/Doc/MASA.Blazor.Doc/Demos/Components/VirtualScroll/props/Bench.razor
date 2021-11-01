@@ -1,5 +1,4 @@
-﻿@using BlazorComponent
-<div>
+﻿<div>
     <MResponsive MaxWidth="400" Class="mx-auto mb-4">
         <MTextField @bind-Value="_benched"  Type="number" TValue="int" Label="Total Benched">
         </MTextField>
@@ -37,21 +36,18 @@
     </MCard>
 </div>
 
-
-
-
 @code
 {
     int _benched = 0;
 
-    int length = 7000;
+    int _length = 7000;
 
     int[] Items
     {
         get
         {
-            int[] array = new int[length];
-            for (var i = 0; i < length; i++)
+            int[] array = new int[_length];
+            for (var i = 0; i < _length; i++)
             {
                 array[i] = i + 1;
             }
