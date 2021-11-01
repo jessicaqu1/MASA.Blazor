@@ -12,4 +12,4 @@ MVirtualScroll 组件显示一个虚拟，无限 的列表。 它支持动态高
 
 ## API
 
-- [MCard](/docs/api/MCard)
+- [MVirtualScroll](/docs/api/MVirtualScroll)

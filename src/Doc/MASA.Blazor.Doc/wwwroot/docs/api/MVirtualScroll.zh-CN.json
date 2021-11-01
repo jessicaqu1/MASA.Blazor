@@ -1,0 +1,67 @@
+﻿{
+  "Components": [
+    "Tree"
+  ],
+  "Props": [
+    {
+      "Name": "Bench",
+      "Type": "StringNumber",
+      "Default": "0",
+      "Description": "在用户视图之外呈现的项目数（即使它们是不可见的）；以帮助防止快速滚动时出现空白。"
+    },
+    {
+      "Name": "Height",
+      "Type": "StringNumber",
+      "Default": "null",
+      "Description": ""
+    },
+    {
+      "Name": "ItemHeight",
+      "Type": "StringNumber",
+      "Default": "null",
+      "Description": "要显示的项目的像素高度"
+    },
+    {
+      "Name": "Items",
+      "Type": "IReadOnlyList`1",
+      "Default": "[]",
+      "Description": "要显示的项目数组"
+    },
+    {
+      "Name": "MaxHeight",
+      "Type": "StringNumber",
+      "Default": "null",
+      "Description": "设定组件的最大高度。"
+    },
+    {
+      "Name": "MaxWidth",
+      "Type": "StringNumber",
+      "Default": "null",
+      "Description": "设定组件的最大宽度。"
+    },
+    {
+      "Name": "MinHeight",
+      "Type": "StringNumber",
+      "Default": "null",
+      "Description": "设定组件的最小高度。"
+    },
+    {
+      "Name": "MinWidth",
+      "Type": "StringNumber",
+      "Default": "null",
+      "Description": "设定组件的最小宽度。"
+    },
+    {
+      "Name": "Width",
+      "Type": "StringNumber",
+      "Default": "null",
+      "Description": "设定组件的宽度。"
+    }
+  ],
+  "Contents": [
+    {
+      "Name": "ChildContent",
+      "Description": "默认插槽"
+    }
+  ]
+}
