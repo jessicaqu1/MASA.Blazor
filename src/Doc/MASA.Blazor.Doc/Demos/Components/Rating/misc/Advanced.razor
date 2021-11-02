@@ -1,4 +1,6 @@
-﻿<MCard Class="mx-auto overflow-hidden" Style="max-width: 600px;">
+﻿@using BlazorComponent.Web;
+
+<MCard Class="mx-auto overflow-hidden" Style="max-width: 600px;">
     <MRow>
         <MCol Class="d-flex" Cols="6">
             <MImage Src="https://cdn.vuetifyjs.com/images/ratings/fortnite1.png"></MImage>
@@ -27,46 +29,48 @@
         <div>
             <span class="text-h5">FORTNITE</span>
             <div class="grey--text font-weight-light">
-              Video game
+                Video game
             </div>
         </div>
         <MSpacer></MSpacer>
-        <MDialog @bind-Visible="_dialog" Width="400">
-            @*TODO MDialog缺少Activator插槽
-            <ActivatorContent>
-                <MIcon>mdi-share-variant</MIcon>
-            </ActivatorContent>*@
-            <MCard>
-                <MCardTitle>
-                    <span class="text-h6 font-weight-bold"></span>
-                    <MSpacer></MSpacer>
-                    <MButton Class="mx-0" Icon OnClick="() => _dialog = false">
-                        <MIcon>mdi-close-circle-outline</MIcon>
-                    </MButton>
-                </MCardTitle>
-                <MList>
-                    <MListItem>
-                        <MListItemAction>
-                            <MIcon Color="indigo">mdi-facebook</MIcon>
-                        </MListItemAction>
-                        <MCardTitle>Facebook</MCardTitle>
-                    </MListItem>
-                    <MListItem>
-                        <MListItemAction>
-                            <MIcon Color="cyan">mdi-twitter</MIcon>
-                            <MCardTitle>Twitter</MCardTitle>
-                        </MListItemAction>
-                    </MListItem>
-                    <MListItem>
-                        <MListItemAction>
-                            <MIcon Color="cyan">mdi-email</MIcon>
-                            <MCardTitle>Email</MCardTitle>
-                        </MListItemAction>
-                    </MListItem>
-                </MList>
-                <MTextField Label="@(_copied ? "Link copied" :"Click to copy link")" Class="pa-4" Readonly Value="@("https://g.co/kgs/nkrK43")" OnClick="() => _copied = !_copied">
-                </MTextField>
-            </MCard>
+        <MDialog @bind-Value="_dialog" Width="400">
+            <ActivatorContent Context="dialogContext">
+                <MIcon OnClick="() => _dialog = true">mdi-share-variant</MIcon>
+            </ActivatorContent>
+            <ChildContent>
+                <MCard>
+                    <MCardTitle>
+                        <span class="text-h6 font-weight-bold">Share</span>
+                        <MSpacer></MSpacer>
+                        <MButton Class="mx-0" Icon OnClick="() => _dialog = false">
+                            <MIcon>mdi-close-circle-outline</MIcon>
+                        </MButton>
+                    </MCardTitle>
+                    <MList>
+                        <MListItem>
+                            <MListItemAction>
+                                <MIcon Color="indigo">mdi-facebook</MIcon>
+                                <MCardTitle>Facebook</MCardTitle>
+                            </MListItemAction>
+                        </MListItem>
+                        <MListItem>
+                            <MListItemAction>
+                                <MIcon Color="cyan">mdi-twitter</MIcon>
+                                <MCardTitle>Twitter</MCardTitle>
+                            </MListItemAction>
+                        </MListItem>
+                        <MListItem>
+                            <MListItemAction>
+                                <MIcon Color="cyan">mdi-email</MIcon>
+                                <MCardTitle>Email</MCardTitle>
+                            </MListItemAction>
+                        </MListItem>
+                    </MList>
+                    <MTextField @ref="_ref" Label="@(_copied ? "Link copied" :"Click to copy link")" 
+                        Class="pa-4" Readonly Value="@("https://g.co/kgs/nkrK43")" OnFocus="Copy">
+                    </MTextField>
+                </MCard>
+            </ChildContent>
         </MDialog>
     </MCardTitle>
 
@@ -85,15 +89,18 @@
         </MRating>
     </MCardActions>
     <div class="pa-4 pt-0 text-caption">
-      <em>Portions of the materials used are trademarks and/or copyrighted works of Epic Games, Inc. All rights reserved by Epic. This material is not official and is not endorsed by Epic.</em>
+        <em>Portions of the materials used are trademarks and/or copyrighted works of Epic Games, Inc. All rights reserved by Epic. This material is not official and is not endorsed by Epic.</em>
     </div>
 </MCard>
 
 @code
 {
+    [Inject]
+    public Document Document { get; set; }
     private bool _copied = false;
     private bool _dialog = false;
     private double _rating = 10;
+    private MTextField<string> _ref;
     private List<RatingItem> _items = new List<RatingItem>
     {
         new RatingItem { Index = 1, IsFilled = true },
@@ -107,4 +114,10 @@
         new RatingItem { Index = 9, IsFilled = true },
         new RatingItem { Index = 10, IsFilled = true }
     };
+
+    private async Task Copy(FocusEventArgs args)
+    {
+        await Document.ExecCommandAsync("selectAll", false, null);
+        _copied = await Document.ExecCommandAsync<bool>("copy", false, null);
+    }
 }
