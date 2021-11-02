@@ -1,6 +1,6 @@
 ﻿---
-order: 0
-title: 全局配置
+order: 5
+title: 海拔
 ---
 
 正在完善...
