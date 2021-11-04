@@ -152,7 +152,7 @@ namespace MASA.Blazor.Doc.Services
             if (contents == null && componentName != null)
             {
                 var components = await GetComponentAsync(componentName);
-                if (components is null) return contents;
+                if (components is null) components = await GetStyleAsync(componentName);
                 var demoList = components.DemoList?.OrderBy(r => r.Order).ThenBy(r => r.Name);
 
                 contents = new List<ContentsItem>();
