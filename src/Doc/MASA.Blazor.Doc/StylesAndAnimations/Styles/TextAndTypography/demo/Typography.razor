@@ -1,5 +1,5 @@
 ﻿<MItemGroup Mandatory>
-    <MSheet class="overflow-y-auto" MaxHeight=600 Tile>
+    <MSheet Class="overflow-y-auto" MaxHeight=600 Tile>
         @foreach (var item in _classes)
         {
             var c = item[0];
@@ -10,16 +10,18 @@
             var margin = item[5];
 
             <MItem>
-                <MSheet Color="@(context.IsActive ? (GloabIsDark ? "grey darken-3" : "grey lighten-4") : "")"
+                <MSheet Color="@(context.Active ? (GloabIsDark ? "grey darken-3" : "grey lighten-4") : "")"
                     Class="px-4 pt-4 pb-3"
                     Tile
                     Style="cursor: pointer;"
                     @onclick="context.Toggle">
 
-                    <div class="@("text"+c),@(context.IsActive ? $"mb-{margin}" : "")"></div>
+                    <div class="@("text-"+c) @(context.Active ? $"mb-{margin}" : "") transition-swing">
+                        @text
+                    </div>
 
                     <ExpandTransition>
-                        <MResponsive If="@context.IsActive" MaxWidth=350>
+                        <MResponsive If="@context.Active" MaxWidth=350>
                             <div class="d-flex justify-space-between text-caption">
                                 <div>
                                     <div class="grey--text mb-2">
@@ -62,6 +64,7 @@
                                 </div>
                             </div>
                         </MResponsive>
+
                     </ExpandTransition>
 
                 </MSheet>
@@ -75,7 +78,7 @@
     bool GloabIsDark = false;
 
     string[][] _classes = new string[][]
-        {
+    {
         new string[] {"h1", "Heading 1", "6rem", "300", "-.015625em", "-1"},
         new string[] {"h2", "Heading 2", "3.75rem", "300", "-.0083333333em", "0"},
         new string[] {"h3", "Heading 3", "3rem", "400", "normal", "1"},
@@ -89,6 +92,5 @@
         new string[] {"button", "Button", "0.875rem", "500", ".0892857143em", "4"},
         new string[] {"caption", "Caption", "0.75rem", "400", ".0333333333em", "4"},
         new string[] {"overline", "Overline", "0.75rem", "500", ".1666666667em", "4"},
-        };
-
+   };
 }
