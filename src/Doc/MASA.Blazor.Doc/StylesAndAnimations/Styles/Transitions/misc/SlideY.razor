@@ -1,10 +1,10 @@
 ﻿<MRow Justify=JustifyTypes.Center>
 
-    <MMenu Transition="slide-x-transition" Origin="center center">
+    <MMenu Transition="slide-y-transition">
 
         <ActivatorContent>
-            <MButton Color="primary" Class="ma-2" @attributes="context.Attrs">
-                Slide X Transition
+            <MButton Class="ma-2" Color="primary" @attributes="context.Attrs">
+               Slide Y Transition
             </MButton>
         </ActivatorContent>
 
@@ -23,13 +23,13 @@
 
     </MMenu>
 
-    <div class="mx-6 hidden-sm-and-down"></div>
-     
-    <MMenu Transition="scroll-y-transition">
+    <div class="mx-4 hidden-sm-and-down"></div>
 
-         <ActivatorContent>
-            <MButton Color="secondary" Class="ma-2" @attributes="context.Attrs">
-                Scroll Y Transition
+     <MMenu Transition="slide-y-reverse-transition">
+
+        <ActivatorContent>
+            <MButton Class="ma-2" Color="secondary" @attributes="context.Attrs">
+               Slide Y Reverse Transition
             </MButton>
         </ActivatorContent>
 
