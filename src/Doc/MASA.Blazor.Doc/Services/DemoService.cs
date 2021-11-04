@@ -118,7 +118,7 @@ namespace MASA.Blazor.Doc.Services
             CurrentComponentName = componentName;
             await InitializeAsync(CurrentLanguage);
             return _componentCache.TryGetValue(CurrentLanguage, out var component)
-                ? (await component)[componentName.ToLower()]
+                ? ((await component).TryGetValue(componentName.ToLower(),out var componetModel)?componetModel:null)
                 : null;
         }
 
@@ -152,6 +152,7 @@ namespace MASA.Blazor.Doc.Services
             if (contents == null && componentName != null)
             {
                 var components = await GetComponentAsync(componentName);
+                if (components is null) return contents;
                 var demoList = components.DemoList?.OrderBy(r => r.Order).ThenBy(r => r.Name);
 
                 contents = new List<ContentsItem>();

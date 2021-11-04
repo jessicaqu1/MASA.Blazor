@@ -39,7 +39,7 @@ namespace MASA.Blazor.Doc.Pages
                 Name = Name.Split("#")[0];
             }
 
-            _demoComponent = await Service.GetComponentAsync(Name);
+            _demoComponent = await Service.GetStyleAsync(Name);
 
             var demos = _demoComponent.DemoList?
                 .Where(x => !x.Debug && !x.Docs.HasValue)
