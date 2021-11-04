@@ -11,9 +11,9 @@ namespace MASA.Blazor
 
         protected override async Task ToggleItem()
         {
-            await (ItemGroup as BSlideGroup)?.SetWidths();
-
             await base.ToggleItem();
+
+            await (ItemGroup as BSlideGroup)?.SetWidths();
         }
     }
 }
