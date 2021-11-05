@@ -1,5 +1,5 @@
 ---
-order: 0
+order: 1
 title:
   zh-CN: 排版说明
   en-US: typographyIllustrate
@@ -55,6 +55,8 @@ title:
         <div class="m-alert__border m-alert__border--left"></div>
     </div>
 </div>
+
+下面的示例演示如何在不同的断点显示不同的大小：
 
 ## en-US
 

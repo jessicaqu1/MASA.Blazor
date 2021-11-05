@@ -1,14 +1,11 @@
 ﻿<MContainer Style="max-width: 500px">
 
-  @*  <MTextField Label="What are you working on?" Solo Value=_newTask OnKeyDown="Create">
+    <MTextField Label="What are you working on?" Solo Value=_newTask OnKeyDown="Create">
         <AppendContent>
             <FadeTransition>
-                @if (string.IsNullOrEmpty(_newTask) == false)
-                {
-                    <MIcon>
-                        add_circle
-                    </MIcon>
-                }
+                <MIcon If="@(string.IsNullOrEmpty(_newTask) == false)">
+                    add_circle
+                </MIcon>
             </FadeTransition>
         </AppendContent>
     </MTextField>
@@ -16,9 +13,9 @@
     <h2 class="text-h4 success--text pl-4">
         Tasks:&nbsp;
         <FadeTransition>
-            <span>
+            <Element Tag="span" Show=true>
                 @_tasks.Count
-            </span>
+            </Element>
         </FadeTransition>
     </h2>
 
@@ -47,7 +44,7 @@
     @if (_tasks.Count > 0)
     {
         <MCard>
-            <SlideYTransition class="py-0">
+         @*   <SlideYTransition class="py-0">
                 @for (var i = 0; i < _tasks.Count; i++)
                 {
                     var task = _tasks[i];
@@ -71,20 +68,17 @@
                         <MSpacer></MSpacer>
 
                         <ScrollXTransition>
-                            @if (task.done)
-                            {
-                                <MIcon Color="success">
-                                    mdi-check
-                                </MIcon>
-                            }
+                            <MIcon If="@task.done" Color="success">
+                                mdi-check
+                            </MIcon>
                         </ScrollXTransition>
 
                     </MListItem>
                 }
-            </SlideYTransition>
+            </SlideYTransition>*@
         </MCard>
     }
-*@
+
 
 </MContainer>
 
@@ -106,7 +100,7 @@
 
     void Create(KeyboardEventArgs eventArgs)
     {
-        if (eventArgs.Key == "enter")
+        if (eventArgs.Key == "Enter")
         {
             _tasks.Add((false, _newTask));
             _newTask = "";
